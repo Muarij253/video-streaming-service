@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head><title>Video Stream</title></head>
+<body>
+  <h2>Upload Video</h2>
+  <input type="file" id="videoFile" />
+  <button onclick="upload()">Upload</button>
+
+  <h2>Videos</h2>
+  <div id="videoList"></div>
+
+  <script>
+    async function upload() {
+      const file = document.getElementById("videoFile").files[0];
+      const formData = new FormData();
+      formData.append("video", file);
+      await fetch("http://localhost:5000/upload", {
+        method: "POST",
+        body: formData
+      });
+      loadVideos();
+    }
+
+    async function loadVideos() {
+      const res = await fetch("http://localhost:5000/videos");
+      const files = await res.json();
+      const list = document.getElementById("videoList");
+      list.innerHTML = "";
+      files.forEach(file => {
+        list.innerHTML += `<video width="320" controls>
+                             <source src="http://localhost:5000/stream/${file}" type="video/mp4">
+                           </video><br>`;
+      });
+    }
+
+    loadVideos();
+  </script>
+</body>
+</html>
